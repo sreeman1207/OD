@@ -209,6 +209,42 @@ $role     = htmlspecialchars($_SESSION['role'] ?? 'Member', ENT_QUOTES, 'UTF-8')
             <p style="color: var(--text-muted); font-size: 0.875rem;">Your account session was verified successfully.</p>
         </section>
     </main>
+<!-- Add this script at the bottom of dashboard.php before </body> -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector(".import-form");
+    const fileInput = document.querySelector("input[name='csv_file']");
+
+    form.addEventListener("submit", (e) => {
+        // Prevent default form submission if you want to store locally first
+        // e.preventDefault();
+
+        const file = fileInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const csvData = event.target.result;
+
+                // Store raw CSV in localStorage
+                localStorage.setItem("uploadedCSV", csvData);
+
+                // Optionally parse and store as JSON
+                const rows = csvData.split("\n").map(r => r.split(","));
+                localStorage.setItem("uploadedCSV_JSON", JSON.stringify(rows));
+
+                console.log("CSV stored in localStorage!");
+            };
+            reader.readAsText(file);
+        }
+    });
+});
+
+// Example API-like function to fetch stored data
+function getStoredCSV() {
+    const data = localStorage.getItem("uploadedCSV_JSON");
+    return data ? JSON.parse(data) : [];
+}
+</script>
 
 </body>
 </html>
